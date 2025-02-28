@@ -4,11 +4,11 @@ const { User } = require('../models/User');
 
 // функция для валидации данных
 const validateEventData = (data, isUpdate = false) => {
-    const { title, date, createdBy } = data;
+    const { title, date, location, createdBy } = data;
 
-    // проверка обязательных данных для создания
-    if (!isUpdate && (!title || !date || !createdBy)) {
-        return { valid: false, message: 'укажите все обязательные поля (title, date, createdBy' };
+    // проверка обязательных данных только для создания
+    if (!isUpdate && (!title || !date || !location || !createdBy)) {
+        return { valid: false, message: 'укажите все обязательные поля (title, date, locaton, createdBy' };
     }
 
     // проверка ID создателя для создания
@@ -22,6 +22,9 @@ const validateEventData = (data, isUpdate = false) => {
     }
     if (date && isNaN(Date.parse(date))) {
         return { valid: false, message: 'неверный формат даты (--.--.----)' };
+    }
+    if (location && typeof location !== 'string') {
+        return { valid: false, message: 'местоположение должно быть строкой' };
     }
 
     // проверка на изменение запрещённых полей

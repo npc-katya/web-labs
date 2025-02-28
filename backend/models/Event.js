@@ -23,6 +23,10 @@ Event.init({
         type: DataTypes.DATE,
         allowNull: false,
     },
+    location: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
     createdBy: {
         type: DataTypes.INTEGER,
         allowNull: false,
