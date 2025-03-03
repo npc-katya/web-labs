@@ -1,42 +1,6 @@
 const { Event } = require('../models/Event');
 const { User } = require('../models/User');
-
-
-// функция для валидации данных
-const validateEventData = (data, isUpdate = false) => {
-    const { title, date, location, createdBy } = data;
-
-    // проверка обязательных данных только для создания
-    if (!isUpdate && (!title || !date || !location || !createdBy)) {
-        return { valid: false, message: 'укажите все обязательные поля (title, date, locaton, createdBy' };
-    }
-
-    // проверка ID создателя для создания
-    if (!isUpdate && createdBy && typeof createdBy !== 'number') {
-        return { valid: false, message: 'ID создателя должен быть числом' };
-    }
-
-    // проверка типов данных
-    if (title && typeof title !== 'string') {
-        return { valid: false, message: 'название должно быть строкой' };
-    }
-    if (date && isNaN(Date.parse(date))) {
-        return { valid: false, message: 'неверный формат даты (--.--.----)' };
-    }
-    if (location && typeof location !== 'string') {
-        return { valid: false, message: 'местоположение должно быть строкой' };
-    }
-
-    // проверка на изменение запрещённых полей
-    if (isUpdate && data.hasOwnProperty('createdBy')) {
-        return { valid: false, message: 'изменение ID создателя запрещено' };
-    }
-    if (isUpdate && data.hasOwnProperty('createdAt')) {
-        return { valid: false, message: 'изменение времени создания запрещено' };
-    }
-
-    return { valid: true };
-};
+const { validateEventData } = require('../middleware/validateData');
 
 
 // Create
@@ -89,7 +53,6 @@ const getEventById = async (req, res) => {
         res.status(400).json({ error: 'ошибка при получении мероприятия', details: error.message });
     }
 };
-
 
 // Update
 const updateEvent = async (req, res) => {

@@ -9,28 +9,8 @@ const {
 
 const router = express.Router();
 
-// проверка на origin
-const checkTrustedOrigin = (req, res, next) => {
-    const origin = req.get('origin'); // заголовок Origin
-  
-    // разрешение запроса если origin отсутствует
-    if (!origin) {
-      console.warn('заголовок Origin отсутствует. запрос разрешён.');
-      return next();
-    }
-  
-    // получение списка доверенных origin из .env
-    const allowedOrigins = process.env.CORS_ALLOWED_ORIGINS.split(',');
-  
-    // проверкана доверенность
-    if (allowedOrigins.includes(origin)) {
-      console.log(`запрос от доверенного origin: ${origin}`);
-      next();
-    } else {
-      console.warn(`запрос от недоверенного origin: ${origin}`);
-      res.status(403).json({ error: 'запрос запрещён' });
-    }
-  };
+const {checkTrustedOrigin} = require('../middleware/checkTrustedOrigin');
+//const { DELETE } = require('sequelize/lib/query-types');
 
 // CRUD routes for users
 
@@ -64,7 +44,7 @@ const checkTrustedOrigin = (req, res, next) => {
  *       400:
  *         description: Ошибка валидации или создания пользователя
  */
-router.post('/users', createUser);
+router.post('/users', checkTrustedOrigin("POST"), createUser);
 
 /**
  * @swagger
@@ -85,7 +65,7 @@ router.post('/users', createUser);
  *       400:
  *         description: Ошибка при получении пользователей
  */
-router.get('/users', getUsers);
+router.get('/users', checkTrustedOrigin("GETS"), getUsers);
 
 /**
  * @swagger
@@ -113,7 +93,7 @@ router.get('/users', getUsers);
  *       400:
  *         description: Ошибка при получении пользователя
  */
-router.get('/users/:id', getUserById);
+router.get('/users/:id', checkTrustedOrigin("GET"), getUserById);
 
 /**
  * @swagger
@@ -147,7 +127,7 @@ router.get('/users/:id', getUserById);
  *       400:
  *         description: Ошибка валидации или обновления пользователя
  */
-router.put('/users/:id', checkTrustedOrigin, updateUser);
+router.put('/users/:id', checkTrustedOrigin("PUT"), updateUser);
 
 /**
  * @swagger
@@ -171,6 +151,6 @@ router.put('/users/:id', checkTrustedOrigin, updateUser);
  *       400:
  *         description: Ошибка при удалении пользователя
  */
-router.delete('/users/:id', checkTrustedOrigin, deleteUser);
+router.delete('/users/:id', checkTrustedOrigin("DELETE"), deleteUser);
 
 module.exports = router;
