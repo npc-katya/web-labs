@@ -9,29 +9,8 @@ const {
 
 const router = express.Router();
 
+const {checkTrustedOrigin} = require('../middleware/checkTrustedOrigin');
 
-// проверка на origin
-const checkTrustedOrigin = (req, res, next) => {
-    const origin = req.get('origin'); // заголовок Origin
-  
-    // разрешение запроса если origin отсутствует
-    if (!origin) {
-      console.warn('заголовок Origin отсутствует. запрос разрешён.');
-      return next();
-    }
-  
-    // получение списка доверенных origin из .env
-    const allowedOrigins = process.env.CORS_ALLOWED_ORIGINS.split(',');
-  
-    // проверкана доверенность
-    if (allowedOrigins.includes(origin)) {
-      console.log(`запрос от доверенного origin: ${origin}`);
-      next();
-    } else {
-      console.warn(`запрос от недоверенного origin: ${origin}`);
-      res.status(403).json({ error: 'запрос запрещён' });
-    }
-  };
 
 // CRUD routes for users
 
@@ -65,7 +44,7 @@ const checkTrustedOrigin = (req, res, next) => {
  *       400:
  *         description: Ошибка валидации или создания события
  */
-router.post('/events', createEvent);
+router.post('/events', checkTrustedOrigin("POST"), createEvent);
 
 /**
  * @swagger
@@ -86,7 +65,7 @@ router.post('/events', createEvent);
  *       400:
  *         description: Ошибка при получении мероприятий
  */
-router.get('/events', getEvents);
+router.get('/events', checkTrustedOrigin("GETS"), getEvents);
 
 /**
  * @swagger
@@ -114,7 +93,7 @@ router.get('/events', getEvents);
  *       400:
  *         description: Ошибка при получении мероприятия
  */
-router.get('/events/:id', getEventById);
+router.get('/events/:id', checkTrustedOrigin("GET"), getEventById);
 
 /**
  * @swagger
@@ -148,7 +127,7 @@ router.get('/events/:id', getEventById);
  *       400:
  *         description: Ошибка валидации или обновления мероприятия
  */
-router.put('/events/:id', checkTrustedOrigin, updateEvent);
+router.put('/events/:id', checkTrustedOrigin("PUT"), updateEvent);
 
 /**
  * @swagger
@@ -172,6 +151,6 @@ router.put('/events/:id', checkTrustedOrigin, updateEvent);
  *       400:
  *         description: Ошибка при удалении мероприятия
  */
-router.delete('/events/:id', checkTrustedOrigin, deleteEvent);
+router.delete('/events/:id', checkTrustedOrigin("DELETE"), deleteEvent);
 
 module.exports = router;

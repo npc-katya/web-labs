@@ -9,6 +9,7 @@ const User = require('./models/User');
 const userRoutes = require('./routes/userRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const { associate } = require('./models/associations');
+const errorHandler = require('./middleware/errorHandler');
 
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
@@ -35,6 +36,9 @@ app.use(cors(corsOptions));
 
 // логирование запросов с помощью morgan
 app.use(morgan('[:method] :url'));
+
+// обработка некорректных json запросов
+app.use(errorHandler);
 
 app.use(userRoutes);
 app.use(eventRoutes);

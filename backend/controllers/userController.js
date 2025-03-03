@@ -1,51 +1,5 @@
 const { User } = require('../models/User');
-
-// функция для валидации данных
-const validateUserData = async (data, userId = null) => {
-    const { name, email } = data;
-
-    // проверка обязательных данных для создания
-    if (!userId && (!name || !email)) {
-        return { valid: false, message: 'укажите все обязательные поля (name, email)' };
-    }
-
-    // проверка типов данных
-    if (name && typeof name !== 'string') {
-        return { valid: false, message: 'имя должно быть строкой' };
-    }
-    if (email && typeof email!== 'string') {
-        return { valid: false, message: 'почта должна быть строкой' };
-    }
-
-    // проверка на изменение запрещённого поля
-    if (userId && data.hasOwnProperty('createdAt')) {
-        return { valid: false, message: 'изменение времени создания запрещено' };
-    }
-
-    // проверка уникальности email
-    if (userId) {
-        const existingUser = await User.findOne({ where: { id: userId } });
-        if (!existingUser) {
-            return { valid: false, message: 'пользователь не найден' };
-        }
-
-        // для update
-        if (data.email && existingUser.email !== data.email) {
-            const emailExists = await User.findOne({ where: { email: data.email } });
-            if (emailExists) {
-                return { valid: false, message: 'пользователь с таким email уже существует' };
-            }
-        }
-    } else {
-        // для create
-            const emailExists = await User.findOne({ where: { email } });
-            if (emailExists) {
-                return { valid: false, message: 'пользователь с таким email уже существует' };
-            }
-    }
-
-    return { valid: true };
-};
+const { validateUserData } = require('../middleware/validateData');
 
 
 // Create
