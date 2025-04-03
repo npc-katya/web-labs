@@ -6,8 +6,10 @@ const morgan = require('morgan');
 const { authenticateDB } = require('./config/db');
 const Event = require('./models/Event');
 const User = require('./models/User');
-const userRoutes = require('./routes/userRoutes');
-const eventRoutes = require('./routes/eventRoutes');
+const authRoutes = require('./routes/auth');
+const protectedRoutes = require('./routes/protectedRoutes');
+const publicRoutes = require('./routes/publicRoutes');
+
 const { associate } = require('./models/associations');
 const errorHandler = require('./middleware/errorHandler');
 
@@ -15,6 +17,8 @@ const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 
 const swaggerConfig = require('./config/swaggerConfig');
+
+const { passport } = require('./config/passport');
 
 
 // загрузка конфигурации из .env файла
@@ -40,9 +44,14 @@ app.use(morgan('[:method] :url'));
 // обработка некорректных json запросов
 app.use(errorHandler);
 
-app.use(userRoutes);
-app.use(eventRoutes);
-  
+// инициализация Passport
+app.use(passport.initialize());
+
+// маршруты
+app.use('/auth', authRoutes);
+app.use('/protected', protectedRoutes);
+app.use('/', publicRoutes);
+
 
 // инициализация Swagger
 const swaggerDocs = swaggerJsDoc(swaggerConfig);
@@ -70,4 +79,5 @@ app.listen(PORT, async (err) => {
     // синхронизация моделей
     await User.syncModel();
     await Event.syncModel();
+    associate();
 });

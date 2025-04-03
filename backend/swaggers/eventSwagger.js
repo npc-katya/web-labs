@@ -1,19 +1,3 @@
-const express = require('express');
-const {
-    createEvent,
-    getEvents,
-    getEventById,
-    updateEvent,
-    deleteEvent,
-} = require('../controllers/eventController');
-
-const router = express.Router();
-
-const {checkTrustedOrigin} = require('../middleware/checkTrustedOrigin');
-
-
-// CRUD routes for users
-
 /**
  * @swagger
  * tags:
@@ -23,7 +7,7 @@ const {checkTrustedOrigin} = require('../middleware/checkTrustedOrigin');
 
 /**
  * @swagger
- * /events:
+ * /protected/events:
  *   post:
  *     summary: Создать новое событие
  *     description: Создает новое событие с указанными данными
@@ -44,11 +28,10 @@ const {checkTrustedOrigin} = require('../middleware/checkTrustedOrigin');
  *       400:
  *         description: Ошибка валидации или создания события
  */
-router.post('/events', checkTrustedOrigin("POST"), createEvent);
 
 /**
  * @swagger
- * /events:
+ * /protected/events:
  *   get:
  *     summary: Получить список всех мероприятий
  *     description: Возвращает список всех мероприятий
@@ -65,11 +48,10 @@ router.post('/events', checkTrustedOrigin("POST"), createEvent);
  *       400:
  *         description: Ошибка при получении мероприятий
  */
-router.get('/events', checkTrustedOrigin("GETS"), getEvents);
 
 /**
  * @swagger
- * /events/{id}:
+ * /protected/events/{id}:
  *   get:
  *     summary: Получить мероприятие по ID
  *     description: Возвращает мероприятие по его ID
@@ -93,11 +75,10 @@ router.get('/events', checkTrustedOrigin("GETS"), getEvents);
  *       400:
  *         description: Ошибка при получении мероприятия
  */
-router.get('/events/:id', checkTrustedOrigin("GET"), getEventById);
 
 /**
  * @swagger
- * /events/{id}:
+ * /protected/events/{id}:
  *   put:
  *     summary: Обновить мероприятия по ID
  *     description: Обновляет данные мероприятия по его ID
@@ -127,11 +108,10 @@ router.get('/events/:id', checkTrustedOrigin("GET"), getEventById);
  *       400:
  *         description: Ошибка валидации или обновления мероприятия
  */
-router.put('/events/:id', checkTrustedOrigin("PUT"), updateEvent);
 
 /**
  * @swagger
- * /events/{id}:
+ * /protected/events/{id}:
  *   delete:
  *     summary: Удалить мероприятие по ID
  *     description: Удаляет мероприятие по его ID
@@ -151,6 +131,3 @@ router.put('/events/:id', checkTrustedOrigin("PUT"), updateEvent);
  *       400:
  *         description: Ошибка при удалении мероприятия
  */
-router.delete('/events/:id', checkTrustedOrigin("DELETE"), deleteEvent);
-
-module.exports = router;

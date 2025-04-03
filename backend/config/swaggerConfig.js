@@ -20,6 +20,7 @@ module.exports = {
               id: {
                 type: 'integer',
                 description: 'ID пользователя',
+                readOnly: "true",
               },
               name: {
                 type: 'string',
@@ -29,12 +30,18 @@ module.exports = {
                 type: 'string',
                 description: 'Email пользователя',
               },
+              password: {
+                type: 'string',
+                description: 'пароль пользователя',
+              },
               createdAt: {
+                readOnly: "true",
                 type: 'string',
                 format: 'date-time',
                 description: 'Дата создания пользователя',
               },
               updatedAt: {
+                readOnly: "true",
                 type: 'string',
                 format: 'date-time',
                 description: 'Дата последнего обновления пользователя',
@@ -45,6 +52,7 @@ module.exports = {
             type: 'object',
             properties: {
               id: {
+                readOnly: "true",
                 type: 'integer',
                 description: 'ID события',
               },
@@ -58,11 +66,13 @@ module.exports = {
                 description: 'Дата события',
               },
               createdAt: {
+                readOnly: "true",
                 type: 'string',
                 format: 'date-time',
                 description: 'Дата создания события',
               },
               updatedAt: {
+                readOnly: "true",
                 type: 'string',
                 format: 'date-time',
                 description: 'Дата последнего обновления события',
@@ -72,5 +82,5 @@ module.exports = {
         },
       },
     },
-    apis: ['./routes/*.js'],
+    apis: ['./swaggers/*.js'],
   };

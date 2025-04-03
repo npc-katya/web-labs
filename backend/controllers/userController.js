@@ -1,5 +1,6 @@
 const { User } = require('../models/User');
 const { validateUserData } = require('../middleware/validateData');
+const { hashPassword } = require('../middleware/hashPassword');
 
 
 // Create
@@ -11,11 +12,25 @@ const createUser = async (req, res) => {
         return res.status(400).json({ message: validation.message });
     }
 
-    // создание пользователя
+    // хеширование пароля
+    const hashedPassword = await hashPassword(req.body.password);
+
     try {
-        const userData = req.body;
-        const newUser = await User.create(userData);
-        res.status(201).json(newUser);
+        // Создание пользователя
+        const newUser = await User.create({
+            ...req.body,
+            password: hashedPassword
+        });
+
+        // ответ
+        const userResponse = {
+            id: newUser.id,
+            name: newUser.name,
+            email: newUser.email,
+            createdAt: newUser.createdAt
+        };
+        res.status(201).json(userResponse);
+
     } catch (error) {
         res.status(400).json({ error: 'ошибка при создании пользователя', details: error.message });
     }
@@ -47,21 +62,38 @@ const getUserById = async (req, res) => {
 // Update
 const updateUser = async (req, res) => {
 
-    // валидация данных
+    const userData = req.body;
     const userId = req.params.id;
+
+    // валидация данных
     const validation = await validateUserData(req.body, userId);
     if (!validation.valid) {
         return res.status(400).json({ message: validation.message });
     }
 
-    // обновление пользователя
     try {
-        const [updated] = await User.update(req.body, { where: { id: userId } });
+
+        const updateData = { ...userData };
+        
+        // хеширование пароля, если он был изменен
+        if (userData.password) {
+            updateData.password = await hashPassword(userData.password);
+        }
+
+        // обновление пользователя
+        const [updated] = await User.update(updateData, { 
+            where: { id: userId },
+        });
         if (!updated) {
             return res.status(404).json({ error: 'пользователь не найден' });
         }
-        const updatedUser = await User.findByPk(userId);
+
+        // ответ
+        const updatedUser = await User.findByPk(userId, {
+            attributes: { exclude: ['password'] }
+        });
         res.status(200).json(updatedUser);
+
     } catch (error) {
         res.status(400).json({ error: 'ошибка при обновлении пользователя', details: error.message });
     }
