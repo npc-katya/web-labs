@@ -6,6 +6,7 @@ const morgan = require('morgan');
 const { authenticateDB } = require('./config/db');
 const Event = require('./models/Event');
 const User = require('./models/User');
+const LoginHistory = require('./models/LoginHistory');
 const authRoutes = require('./routes/auth');
 const protectedRoutes = require('./routes/protectedRoutes');
 const publicRoutes = require('./routes/publicRoutes');
@@ -19,7 +20,6 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerConfig = require('./config/swaggerConfig');
 
 const { passport } = require('./config/passport');
-
 
 // загрузка конфигурации из .env файла
 dotenv.config();
@@ -79,5 +79,6 @@ app.listen(PORT, async (err) => {
     // синхронизация моделей
     await User.syncModel();
     await Event.syncModel();
+    await LoginHistory.syncModel();
     associate();
 });
