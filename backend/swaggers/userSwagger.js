@@ -12,6 +12,8 @@
  *     summary: Создать нового пользователя
  *     description: Создает нового пользователя с указанными данными
  *     tags: [Users]
+ *     security:
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -36,6 +38,8 @@
  *     summary: Получить список всех пользователей
  *     description: Возвращает список всех пользователей
  *     tags: [Users]
+ *     security:
+ *       - BearerAuth: []
  *     responses:
  *       200:
  *         description: Успешный запрос
@@ -56,6 +60,8 @@
  *     summary: Получить пользователя по ID
  *     description: Возвращает пользователя по его ID
  *     tags: [Users]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -83,6 +89,8 @@
  *     summary: Обновить пользователя по ID
  *     description: Обновляет данные пользователя по его ID
  *     tags: [Users]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -116,6 +124,8 @@
  *     summary: Удалить пользователя по ID
  *     description: Удаляет пользователя по его ID
  *     tags: [Users]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id

@@ -12,6 +12,8 @@
  *     summary: Создать новое событие
  *     description: Создает новое событие с указанными данными
  *     tags: [Events]
+ *     security:
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -31,11 +33,12 @@
 
 /**
  * @swagger
- * /protected/events:
+ * /events:
  *   get:
  *     summary: Получить список всех мероприятий
  *     description: Возвращает список всех мероприятий
  *     tags: [Events]
+ *     security: []
  *     responses:
  *       200:
  *         description: Успешный запрос
@@ -56,6 +59,8 @@
  *     summary: Получить мероприятие по ID
  *     description: Возвращает мероприятие по его ID
  *     tags: [Events]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -83,6 +88,8 @@
  *     summary: Обновить мероприятия по ID
  *     description: Обновляет данные мероприятия по его ID
  *     tags: [Events]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -116,6 +123,8 @@
  *     summary: Удалить мероприятие по ID
  *     description: Удаляет мероприятие по его ID
  *     tags: [Events]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id

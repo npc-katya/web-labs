@@ -73,14 +73,12 @@ const login = async (req, res) => {
       // поиск пользователя по email
       const user = await User.findOne({ where: { email } });
       if (!user) {
-        //await LoginHistoryService.recordLogin(-1, req, false);
         return res.status(401).json({ error: 'неверный email или пароль' });
       }
   
       // проверка пароля
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
-        //await LoginHistoryService.recordLogin(user.id, req, false);
         return res.status(401).json({ error: 'неверный email или пароль' });
       }
 

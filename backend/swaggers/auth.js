@@ -1,7 +1,7 @@
 /**
  * @swagger
  * tags:
- *   name: Events
+ *   name: Auth
  *   description: Аутентификация пользователей
  */
 
@@ -12,6 +12,7 @@
  *     summary: Регистрация нового пользователя
  *     description: Регистрирует нового пользователя с указанными данными
  *     tags: [Auth]
+ *     security: []
  *     requestBody:
  *       required: true
  *       content:
@@ -31,10 +32,6 @@
  *                   example: "регистрация успешна"
  *       400:
  *         description: Ошибка валидации или создания пользователя
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  *       500:
  *         description: Серверная ошибка
  */
@@ -48,6 +45,7 @@
  *       Проверяет email и пароль пользователя.
  *       При успешной аутентификации возвращает JWT-токен для доступа к защищенным роутам
  *     tags: [Auth]
+ *     security: []
  *     requestBody:
  *       required: true
  *       content:
