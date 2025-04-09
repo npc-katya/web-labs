@@ -51,7 +51,7 @@
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/User'
+ *             $ref: '#/components/schemas/UserAuth'
  *     responses:
  *       200:
  *         description: Успешный вход, возвращает JWT-токен

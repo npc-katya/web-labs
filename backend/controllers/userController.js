@@ -1,6 +1,9 @@
 const { User } = require('../models/User');
+const { LoginHistory } = require('../models/LoginHistory');
+const { Event } = require('../models/Event');
 const { validateUserData } = require('../middleware/validateData');
 const { hashPassword } = require('../middleware/hashPassword');
+const { sequelize } = require('../config/db');
 
 
 // Create
@@ -101,13 +104,33 @@ const updateUser = async (req, res) => {
 
 // Delete
 const deleteUser = async (req, res) => {
+
     try {
+        const transaction = await sequelize.transaction();
+
+        // удаление связанных записей из таблицы events
+        await Event.destroy({
+            where: { createdBy: req.params.id },
+            transaction
+        });
+
+        // удаление связанных записей из таблицы login_history
+        await LoginHistory.destroy({
+            where: { userId: req.params.id },
+            transaction
+        });
+
+        // удаление пользователя
         const deleted = await User.destroy({
             where: { id: req.params.id },
+            transaction
         });
+
         if (!deleted) {
+            await transaction.rollback();
             return res.status(404).json({ error: 'пользователь не найден' });
         }
+        await transaction.commit();
         res.status(204).json();
     } catch (error) {
         res.status(400).json({ error: 'ошибка при удалении пользователя', details: error.message });

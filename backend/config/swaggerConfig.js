@@ -68,6 +68,49 @@ module.exports = {
             },
           }
         },
+        UserAuth: {
+          type: 'object',
+          required: ['name', 'email', 'password'],
+          properties: {
+            id: {
+              type: 'integer',
+              description: 'ID пользователя',
+              readOnly: true,
+              example: 1
+            },
+            name: {
+              type: 'string',
+              description: 'Имя пользователя',
+              readOnly: true,
+              example: 'Иван Иванов'
+            },
+            email: {
+              type: 'string',
+              format: 'email',
+              description: 'Email пользователя',
+              example: 'user@example.com'
+            },
+            password: {
+              type: 'string',
+              description: 'Пароль пользователя',
+              writeOnly: true,
+              minLength: 8,
+              example: 'securePassword123'
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Дата создания',
+              readOnly: true
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Дата обновления',
+              readOnly: true
+            },
+          }
+        },
         Event: {
           type: 'object',
           required: ['title', 'date'],
@@ -88,6 +131,62 @@ module.exports = {
               format: 'date-time',
               description: 'Дата события',
               example: '2023-12-31T20:00:00Z'
+            },
+            location: {
+              type: 'string',
+              description: 'Место события',
+              example: 'Лес'
+            },
+            createdBy: {
+              type: 'integer',
+              description: 'ID создалетя',
+              example: '1'
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Дата создания',
+              readOnly: true
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Дата обновления',
+              readOnly: true
+            },
+          }
+        },
+        EventPut: {
+          type: 'object',
+          required: ['title', 'date'],
+          properties: {
+            id: {
+              type: 'integer',
+              description: 'ID события',
+              readOnly: true,
+              example: 1
+            },
+            title: {
+              type: 'string',
+              description: 'Название события',
+              example: 'Конференция'
+            },
+            date: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Дата события',
+              example: '2023-12-31T20:00:00Z'
+            },
+            location: {
+              type: 'string',
+              description: 'Место события',
+              example: 'Лес'
+            },
+            createdBy: {
+              type: 'integer',
+              description: 'ID создалетя',
+              readOnly: true,
+              example: '1'
             },
             createdAt: {
               type: 'string',

@@ -102,7 +102,7 @@
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Event'
+ *             $ref: '#/components/schemas/EventPut'
  *     responses:
  *       200:
  *         description: Мероприятие успешно обновлено
