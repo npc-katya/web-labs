@@ -1,6 +1,8 @@
+const { User } = require('../models/User');
+
 // функция для валидации данных пользователей
 const validateUserData = async (data, userId = null) => {
-    const { name, email, id } = data;
+    const { name, email, id, password } = data;
 
     // проверка на наличие id в запросе
     if (id) {
@@ -8,8 +10,8 @@ const validateUserData = async (data, userId = null) => {
     }
 
     // проверка обязательных данных для создания
-    if (!userId && (!name || !email)) {
-        return { valid: false, message: 'укажите все обязательные поля (name, email)' };
+    if (!userId && (!name || !email || !password)) {
+        return { valid: false, message: 'укажите все обязательные поля (name, email, password)' };
     }
 
     // проверка типов данных
@@ -18,6 +20,9 @@ const validateUserData = async (data, userId = null) => {
     }
     if (email && typeof email!== 'string') {
         return { valid: false, message: 'почта должна быть строкой' };
+    }
+    if (password && typeof password!== 'string') {
+        return { valid: false, message: 'пароль должен быть строкой' };
     }
 
     // проверка на изменение запрещённого поля

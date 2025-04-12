@@ -26,7 +26,6 @@ const checkTrustedOrigin = (str) => (req, res, next) => {
       console.warn(`запрос от недоверенного origin: ${origin}`);
       res.status(403).json({ error: "запрос запрещён" });
     }
-    next();
 
   } else {
     next();
