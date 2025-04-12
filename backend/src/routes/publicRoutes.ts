@@ -1,6 +1,6 @@
 import express from "express";
-import { getEvents } from "../controllers/eventController.js";
-import { checkTrustedOrigin } from "../middleware/checkTrustedOrigin.js";
+import { getEvents } from "@controllers/eventController";
+import { checkTrustedOrigin } from "@middleware/checkTrustedOrigin";
 
 const router = express.Router();
 

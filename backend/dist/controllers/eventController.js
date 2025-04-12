@@ -1,17 +1,8 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-import Event from "../models/Event.js";
-import User from "../models/User.js";
-import { validateEventData } from "../middleware/validateData.js";
+import Event from "@models/Event";
+import User from "@models/User";
+import { validateEventData } from "@middleware/validateData";
 // Create
-const createEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const createEvent = async (req, res) => {
     // валидация данных
     const validation = validateEventData(req.body);
     if (!validation.valid) {
@@ -20,13 +11,13 @@ const createEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     const { createdBy } = req.body;
     try {
         // проверка существования пользователя
-        const existingUser = yield User.findOne({ where: { id: createdBy } });
+        const existingUser = await User.findOne({ where: { id: createdBy } });
         if (!existingUser) {
             return res.status(404).json({ message: "пользователя не существует" });
         }
         // создание события
         const eventData = req.body;
-        const newEvent = yield Event.create(eventData);
+        const newEvent = await Event.create(eventData);
         res.status(201).json(newEvent);
     }
     catch (error) {
@@ -35,11 +26,11 @@ const createEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             details: error.message,
         });
     }
-});
+};
 // Get
-const getEvents = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getEvents = async (req, res) => {
     try {
-        const events = yield Event.findAll();
+        const events = await Event.findAll();
         res.status(200).json(events);
     }
     catch (error) {
@@ -48,11 +39,11 @@ const getEvents = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             details: error.message,
         });
     }
-});
+};
 // Get by ID
-const getEventById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getEventById = async (req, res) => {
     try {
-        const event = yield Event.findByPk(req.params.id);
+        const event = await Event.findByPk(req.params.id);
         if (!event) {
             return res.status(404).json({ error: "мероприятие не найдено" });
         }
@@ -64,9 +55,9 @@ const getEventById = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             details: error.message,
         });
     }
-});
+};
 // Update
-const updateEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const updateEvent = async (req, res) => {
     // валидация данных
     const validation = validateEventData(req.body, true);
     if (!validation.valid) {
@@ -74,13 +65,13 @@ const updateEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
     // обновление мороприятия
     try {
-        const [updated] = yield Event.update(req.body, {
+        const [updated] = await Event.update(req.body, {
             where: { id: req.params.id },
         });
         if (!updated) {
             return res.status(404).json({ error: "мероприятие не найдено" });
         }
-        const updatedEvent = yield Event.findByPk(req.params.id);
+        const updatedEvent = await Event.findByPk(req.params.id);
         res.status(200).json(updatedEvent);
     }
     catch (error) {
@@ -89,11 +80,11 @@ const updateEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             details: error.message,
         });
     }
-});
+};
 // Delete
-const deleteEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const deleteEvent = async (req, res) => {
     try {
-        const deleted = yield Event.destroy({
+        const deleted = await Event.destroy({
             where: { id: req.params.id },
         });
         if (!deleted) {
@@ -107,5 +98,5 @@ const deleteEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             details: error.message,
         });
     }
-});
+};
 export { createEvent, getEvents, getEventById, updateEvent, deleteEvent };

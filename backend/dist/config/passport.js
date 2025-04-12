@@ -1,15 +1,6 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import { Strategy as JwtStrategy, ExtractJwt, } from "passport-jwt";
 import passport from "passport";
-import User from "../models/User.js";
+import User from "@models/User";
 import dotenv from "dotenv";
 dotenv.config();
 // проверка на наличие JWT_SECRET
@@ -22,9 +13,9 @@ const options = {
     secretOrKey: process.env.JWT_SECRET,
 };
 // типизированный verify callback
-const verifyCallback = (payload, done) => __awaiter(void 0, void 0, void 0, function* () {
+const verifyCallback = async (payload, done) => {
     try {
-        const user = yield User.findByPk(payload.id);
+        const user = await User.findByPk(payload.id);
         if (user) {
             return done(null, user);
         }
@@ -33,6 +24,6 @@ const verifyCallback = (payload, done) => __awaiter(void 0, void 0, void 0, func
     catch (error) {
         return done(error, false);
     }
-});
+};
 passport.use(new JwtStrategy(options, verifyCallback));
 export { passport };

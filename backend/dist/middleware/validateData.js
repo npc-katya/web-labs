@@ -1,15 +1,6 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-import User from "../models/User.js";
+import User from "@models/User";
 // функция для валидации данных пользователей
-const validateUserData = (data_1, ...args_1) => __awaiter(void 0, [data_1, ...args_1], void 0, function* (data, userId = null) {
+const validateUserData = async (data, userId = null) => {
     const { name, email, id, password } = data;
     // проверка на наличие id в запросе
     if (id) {
@@ -38,13 +29,13 @@ const validateUserData = (data_1, ...args_1) => __awaiter(void 0, [data_1, ...ar
     }
     // проверка уникальности email
     if (userId) {
-        const existingUser = yield User.findOne({ where: { id: userId } });
+        const existingUser = await User.findOne({ where: { id: userId } });
         if (!existingUser) {
             return { valid: false, message: "пользователь не найден" };
         }
         // для update
         if (data.email && existingUser.email !== data.email) {
-            const emailExists = yield User.findOne({ where: { email: data.email } });
+            const emailExists = await User.findOne({ where: { email: data.email } });
             if (emailExists) {
                 return {
                     valid: false,
@@ -55,7 +46,7 @@ const validateUserData = (data_1, ...args_1) => __awaiter(void 0, [data_1, ...ar
     }
     else {
         // для create
-        const emailExists = yield User.findOne({ where: { email } });
+        const emailExists = await User.findOne({ where: { email } });
         if (emailExists) {
             return {
                 valid: false,
@@ -64,7 +55,7 @@ const validateUserData = (data_1, ...args_1) => __awaiter(void 0, [data_1, ...ar
         }
     }
     return { valid: true };
-});
+};
 // функция для валидации данных мероприятий
 const validateEventData = (data, isUpdate = false) => {
     const { title, date, location, createdBy, id } = data;

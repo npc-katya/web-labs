@@ -1,5 +1,5 @@
 import { Model, DataTypes } from "sequelize";
-import { sequelize } from "../config/db.js";
+import { sequelize } from "@config/db";
 import User from "./User.js";
 
 interface LoginHistoryAttributes {

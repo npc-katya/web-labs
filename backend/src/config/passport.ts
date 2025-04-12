@@ -4,7 +4,7 @@ import {
   type VerifyCallback,
 } from "passport-jwt";
 import passport from "passport";
-import User from "../models/User.js";
+import User from "@models/User";
 import dotenv from "dotenv";
 
 dotenv.config();

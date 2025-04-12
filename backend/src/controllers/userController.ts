@@ -1,9 +1,9 @@
-import User from "../models/User.js";
-import LoginHistory from "../models/LoginHistory.js";
-import Event from "../models/Event.js";
-import { validateUserData } from "../middleware/validateData.js";
-import { hashPassword } from "../middleware/hashPassword.js";
-import { sequelize } from "../config/db.js";
+import User from "@models/User";
+import LoginHistory from "@models/LoginHistory";
+import Event from "@models/Event";
+import { validateUserData } from "@middleware/validateData";
+import { hashPassword } from "@middleware/hashPassword";
+import { sequelize } from "@config/db";
 import { Request, Response } from "express";
 
 interface UserResponse {

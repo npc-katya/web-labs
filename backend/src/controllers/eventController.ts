@@ -1,6 +1,6 @@
-import Event from "../models/Event.js";
-import User from "../models/User.js";
-import { validateEventData } from "../middleware/validateData.js";
+import Event from "@models/Event";
+import User from "@models/User";
+import { validateEventData } from "@middleware/validateData";
 import { Request, Response } from "express";
 
 // Create

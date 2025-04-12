@@ -2,10 +2,10 @@ import bcrypt from "bcrypt";
 import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import User from "../models/User.js";
-import LoginHistory from "../models/LoginHistory.js";
-import { validateUserData } from "../middleware/validateData.js";
-import { hashPassword } from "../middleware/hashPassword.js";
+import User from "@models/User";
+import LoginHistory from "@models/LoginHistory";
+import { validateUserData } from "@middleware/validateData";
+import { hashPassword } from "@middleware/hashPassword";
 
 import { Request, Response } from "express";
 

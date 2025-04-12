@@ -3,22 +3,22 @@ import dotenv from "dotenv";
 import cors from "cors";
 import morgan from "morgan";
 
-import { authenticateDB } from "./config/db.js";
-import Event from "./models/Event.js";
-import User from "./models/User.js";
-import LoginHistory from "./models/LoginHistory.js";
-import authRoutes from "./routes/auth.js";
-import protectedRoutes from "./routes/protectedRoutes.js";
-import publicRoutes from "./routes/publicRoutes.js";
+import { authenticateDB } from "@config/db";
+import Event from "@models/Event";
+import User from "@models/User";
+import LoginHistory from "@models/LoginHistory";
+import authRoutes from "@routes/auth";
+import protectedRoutes from "@routes/protectedRoutes";
+import publicRoutes from "@routes/publicRoutes";
 
-import { associate } from "./models/associations.js";
-import { errorHandler } from "./middleware/errorHandler.js";
+import { associate } from "@models/associations";
+import { errorHandler } from "@middleware/errorHandler";
 
 import swaggerJsDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 
-import swaggerConfig from "./config/swaggerConfig.js";
-import { passport } from "./config/passport.js";
+import swaggerConfig from "@config/swaggerConfig";
+import { passport } from "@config/passport";
 
 // загрузка конфигурации из .env файла
 dotenv.config();

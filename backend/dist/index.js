@@ -1,29 +1,20 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import morgan from "morgan";
-import { authenticateDB } from "./config/db.js";
-import Event from "./models/Event.js";
-import User from "./models/User.js";
-import LoginHistory from "./models/LoginHistory.js";
-import authRoutes from "./routes/auth.js";
-import protectedRoutes from "./routes/protectedRoutes.js";
-import publicRoutes from "./routes/publicRoutes.js";
-import { associate } from "./models/associations.js";
-import { errorHandler } from "./middleware/errorHandler.js";
+import { authenticateDB } from "@config/db";
+import Event from "@models/Event";
+import User from "@models/User";
+import LoginHistory from "@models/LoginHistory";
+import authRoutes from "@routes/auth";
+import protectedRoutes from "@routes/protectedRoutes";
+import publicRoutes from "@routes/publicRoutes";
+import { associate } from "@models/associations";
+import { errorHandler } from "@middleware/errorHandler";
 import swaggerJsDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
-import swaggerConfig from "./config/swaggerConfig.js";
-import { passport } from "./config/passport.js";
+import swaggerConfig from "@config/swaggerConfig";
+import { passport } from "@config/passport";
 // загрузка конфигурации из .env файла
 dotenv.config();
 // создание приложения Express
@@ -60,17 +51,17 @@ app.get("/", (req, res) => {
     res.json({ message: "мяу мяу мяу мяу..." });
 });
 // запуск сервера
-app.listen(PORT, (err) => __awaiter(void 0, void 0, void 0, function* () {
+app.listen(PORT, async (err) => {
     if (err) {
         console.error(`ошибка при запуске сервера: ${err.message}`);
         return;
     }
     console.log(`сервер запущен на порту ${PORT}`);
     // проверка соединения с базой данных
-    yield authenticateDB();
+    await authenticateDB();
     // синхронизация моделей
-    yield User.syncModel();
-    yield Event.syncModel();
-    yield LoginHistory.syncModel();
+    await User.syncModel();
+    await Event.syncModel();
+    await LoginHistory.syncModel();
     associate();
-}));
+});

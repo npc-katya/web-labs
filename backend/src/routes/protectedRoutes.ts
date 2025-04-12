@@ -6,7 +6,7 @@ import {
   getEventById,
   updateEvent,
   deleteEvent,
-} from "../controllers/eventController.js";
+} from "@controllers/eventController";
 
 import {
   createUser,
@@ -14,9 +14,9 @@ import {
   getUserById,
   updateUser,
   deleteUser,
-} from "../controllers/userController.js";
+} from "@controllers/userController";
 
-import { checkTrustedOrigin } from "../middleware/checkTrustedOrigin.js";
+import { checkTrustedOrigin } from "@middleware/checkTrustedOrigin";
 
 const router = express.Router();
 

@@ -1,8 +1,8 @@
 import express from "express";
 import passport from "passport";
-import { createEvent, getEventById, updateEvent, deleteEvent, } from "../controllers/eventController.js";
-import { createUser, getUsers, getUserById, updateUser, deleteUser, } from "../controllers/userController.js";
-import { checkTrustedOrigin } from "../middleware/checkTrustedOrigin.js";
+import { createEvent, getEventById, updateEvent, deleteEvent, } from "@controllers/eventController";
+import { createUser, getUsers, getUserById, updateUser, deleteUser, } from "@controllers/userController";
+import { checkTrustedOrigin } from "@middleware/checkTrustedOrigin";
 const router = express.Router();
 // события
 router.post("/events", passport.authenticate("jwt", { session: false }), checkTrustedOrigin("POST"), createEvent);
