@@ -1,0 +1,297 @@
+* {
+  color: rgb(42, 42, 42);
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  padding: 80px 10%;
+  position: relative;
+  justify-content: center;
+}
+
+.userMapContainer {
+  display: flex;
+  justify-content: space-between;
+  height: 400px;
+}
+
+.userContainer {
+  width: 30%;
+}
+
+.userData {
+  margin-bottom: auto;
+}
+
+.mapContainer {
+  width: 68%;
+  align-self: flex-start;
+
+  .ymaps-map {
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
+
+.map {
+  height: 400px;
+}
+
+.eventsContainer {
+  margin-left: auto;
+  width: 58%;
+  max-height: calc(100vh - 60px);
+}
+
+.eventsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.eventsHeader h1 {
+  font-size: 40px;
+}
+
+.openCreateModalButton {
+  height: 35px;
+  width: 300px;
+  font-size: 25px;
+  border-radius: 8px;
+  background-color: #efedf1;
+}
+
+.openCreateModalButton:hover {
+  background-color: #dad5dd;
+}
+
+h1 {
+  font-size: 40px;
+}
+
+h2 {
+  font-size: 30px;
+}
+
+h3 {
+  font-size: 20px;
+}
+
+.userData {
+  margin-bottom: 20px;
+}
+
+.userUpdateButton {
+  background-color: #c1b4d2;
+  width: 100%;
+  font-size: 20px;
+  border-radius: 8px;
+}
+
+.userUpdateButton:hover {
+  background-color: #aea1c0;
+}
+
+.events {
+  display: flex;
+  gap: 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.event {
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  width: 400px;
+  min-height: 200px;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+  word-wrap: break-word;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.event h3 {
+  font-size: 25px;
+}
+
+.menuButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.eventMeta {
+  color: #c29fd4;
+}
+
+.creatorName {
+  color: #694a79;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: rgba(191, 180, 186, 0.315);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height: auto;
+  background-color: #dad1db;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.modal h2 {
+  font-size: 30px;
+  margin-bottom: 10px;
+}
+
+.modal h3 {
+  font-size: 25px;
+}
+
+.modalButton {
+  background: rgba(192, 134, 177, 0.232);
+  border-radius: 8px;
+  height: 30px;
+  width: 100%;
+  font-size: 20px;
+  margin-top: 15px;
+}
+
+.modalButton:hover {
+  background: rgba(192, 134, 177, 0.449);
+}
+
+.modalCloseButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  color: white;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.modalCloseButton:hover {
+  color: rgb(255, 44, 44);
+}
+
+.modalCloseButton::before {
+  content: "×";
+  font-size: 20px;
+  line-height: 1;
+}
+
+.modalInput {
+  border-bottom: 2px solid #7a767c;
+  width: 100%;
+  font-size: 20px;
+  margin-top: 5px;
+}
+
+.modalCoordinates {
+  color: rgb(159, 112, 167);
+  font-size: 16px;
+  margin-top: 5px;
+}
+
+.message {
+  position: fixed;
+  left: 20px;
+  bottom: 20px;
+  padding: 12px 24px;
+  background: rgba($color: #6e5b8623, $alpha: 1);
+  color: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 1300px) {
+  .userMapContainer {
+    height: 300px;
+  }
+
+  .userContainer {
+    width: 50%;
+  }
+
+  .mapContainer {
+    width: 45%;
+  }
+
+  .map {
+    height: 300px;
+  }
+}
+
+@media (max-width: 1000px) {
+  h1 {
+    font-size: 35px;
+  }
+
+  h2 {
+    font-size: 25px;
+  }
+
+  h3 {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 500px) {
+  .userMapContainer {
+    flex-direction: column;
+    height: auto;
+    margin-bottom: 20px;
+  }
+
+  .userContainer {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .mapContainer {
+    width: 100%;
+  }
+
+  .map {
+    height: 250px;
+  }
+}
