@@ -21,13 +21,12 @@ export const useEventLogic = () => {
   const { events, isLoading, isError, message } = useSelector(
     (state: RootState) => state.events,
   );
-
   const [token, setToken] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<{
     id: number | null;
     name: string;
   }>({ id: null, name: "" });
-
+  
   const [formData, setFormData] = useState({
     title: "",
     date: new Date(),
@@ -42,12 +41,11 @@ export const useEventLogic = () => {
   const [selectedEvent, setSelectedEvent] = useState<EventWithCreator | null>(
     null,
   );
-
   const [mapState, setMapState] = useState({
     center: [53.229292, 50.197327] as [number, number],
     zoom: 10,
   });
-
+  
   const [selectedCoordinates, setSelectedCoordinates] = useState<
     [number, number] | null
   >(null);
@@ -74,7 +72,7 @@ export const useEventLogic = () => {
     () => setIsDeleteConfirmOpen(false),
     isDeleteConfirmOpen,
   );
-
+  
   const getTokenFromCookie = useCallback((): string | null => {
     const cookies = document.cookie.split("; ");
     const tokenCookie = cookies.find((cookie) => cookie.startsWith("token="));
@@ -164,6 +162,7 @@ export const useEventLogic = () => {
     setSelectedCoordinates([53.229292, 50.197327]);
     setInputMethod("map");
     setIsModalOpen(true);
+
   };
 
   const openEditModal = (event: EventWithCreator) => {
@@ -185,6 +184,7 @@ export const useEventLogic = () => {
   const openActionsModal = (event: EventWithCreator) => {
     setSelectedEvent(event);
     setIsActionsModalOpen(true);
+
   };
 
   const closeModal = () => {
@@ -297,7 +297,6 @@ export const useEventLogic = () => {
     modalRef,
     actionModalRef,
     deleteConfirmRef,
-
     formData,
     inputMethod,
     selectedCoordinates,
@@ -327,7 +326,6 @@ export const useEventLogic = () => {
     handleDateChange,
     toggleInputMethod,
     showEventOnMap,
-
     errorMessage,
     successMessage,
   };

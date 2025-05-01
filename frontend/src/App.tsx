@@ -20,6 +20,7 @@ const App = () => {
     dispatch(initializeAuthFromCookie());
   }, [dispatch]);
 
+const App = () => {
   return (
     <Router>
       <Routes>
