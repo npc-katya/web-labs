@@ -1,0 +1,53 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: rgb(190, 179, 215);
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+
+  align-items: center;
+  padding: 0 3%;
+  z-index: 1000;
+  box-shadow: 0 3px 5px rgba(148, 132, 165, 0.262);
+}
+
+.headerLogo {
+  display: flex;
+  align-items: center;
+}
+
+.headerLogo p {
+  font-size: 30px;
+  font-weight: 500px;
+}
+
+.logoImage {
+  height: 50px;
+}
+
+.user {
+  display: flex;
+}
+
+.userName {
+  font-size: 30px;
+}
+
+.modalOpen {
+  margin-left: 10px;
+  width: 40px;
+  height: 40px;
+}
+
+.modalOpen:hover .modalOpenImage {
+  filter: invert(30%);
+}
+
+@media (max-width: 450px) {
+  .headerLogo p {
+    display: none;
+  }
+}
