@@ -6,10 +6,16 @@ import { hashPassword } from "@middleware/hashPassword";
 import { sequelize } from "@config/db";
 import { Request, Response } from "express";
 
+type Gender = 'male' | 'female' | 'other' | 'not specified';
+
 interface UserResponse {
   id: number;
   name: string;
+  surname: string;
+  patronymic: string;
   email: string;
+  gender: Gender;
+  dateOfBirth: Date;
   createdAt: Date;
 }
 
@@ -35,7 +41,11 @@ const createUser = async (req: Request, res: Response) => {
     const userResponse: UserResponse = {
       id: newUser.id,
       name: newUser.name,
+      surname: newUser.surname,
+      patronymic: newUser.patronymic,
       email: newUser.email,
+      gender: newUser.gender,
+      dateOfBirth: newUser.dateOfBirth,
       createdAt: newUser.createdAt,
     };
     res.status(201).json(userResponse);

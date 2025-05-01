@@ -1,8 +1,14 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { registerUser } from "../../api/authService";
 
+type Gender = "male" | "female" | "other" | "not specified";
+
 interface RegisterPayload {
   name: string;
+  surname: string;
+  patronymic: string;
+  gender: Gender;
+  dateOfBirth: Date;
   email: string;
   password: string;
 }
@@ -23,7 +29,15 @@ export const registerThunk = createAsyncThunk(
   "register/user",
   async (data: RegisterPayload, thunkAPI) => {
     try {
-      const response = await registerUser(data.name, data.email, data.password);
+      const response = await registerUser(
+        data.name,
+        data.surname,
+        data.patronymic,
+        data.gender,
+        data.dateOfBirth,
+        data.email,
+        data.password,
+      );
       return response;
     } catch (error) {
       return thunkAPI.rejectWithValue("ошибка при регистрации");

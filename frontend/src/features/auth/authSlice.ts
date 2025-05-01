@@ -4,6 +4,8 @@ import { jwtDecode } from "jwt-decode";
 
 interface User {
   name: string;
+  surname?: string;
+  patronymic?: string;
   email: string;
 }
 
@@ -54,17 +56,33 @@ export const registerThunk = createAsyncThunk(
   async (
     {
       name,
+      surname,
+      patronymic,
+      gender,
+      dateOfBirth,
       email,
       password,
     }: {
       name: string;
+      surname: string;
+      patronymic: string;
+      gender: string;
+      dateOfBirth: Date;
       email: string;
       password: string;
     },
     thunkAPI,
   ) => {
     try {
-      const response = await registerUser(name, email, password);
+      const response = await registerUser(
+        name,
+        surname,
+        patronymic,
+        gender as any,
+        dateOfBirth,
+        email,
+        password,
+      );
       return response;
     } catch (error) {
       return thunkAPI.rejectWithValue("ошибка при регистрации");

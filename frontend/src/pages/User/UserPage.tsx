@@ -8,6 +8,7 @@ import Header from "../../components/header/Header";
 import LoginModal from "../../components/modals/LoginModal";
 import BurgerModal from "../../components/modals/BurgerModal";
 import Modal from "../../components/modals/Modal";
+import UserProfileModal from "../../components/modals/UserProfileModal";
 import ActionsModal from "../../components/modals/ActionsModal";
 import DeleteConfirmModal from "../../components/modals/DeleteConfirmModal";
 import { useModalsLogic } from "../../api/modalsLogic";
@@ -15,18 +16,22 @@ import { useHandlesLogic } from "../../api/handlesLogic";
 
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useProfileManager } from "../../api/userLogic2";
 
 const UserPage = () => {
-  const { userData } = useUserLogic();
+  const { userData, setUserData } = useUserLogic();
 
   const {
     isLoginModalOpen,
     setIsLoginModalOpen,
     isBurgerModalOpen,
     setIsBurgerModalOpen,
+    isUserModalOpen,
+    setIsUserModalOpen,
 
     loginModalRef,
     burgerModalRef,
+    userModalRef,
   } = useModalsLogic();
 
   const {
@@ -74,6 +79,21 @@ const UserPage = () => {
     return null;
   };
 
+  const {
+    profileData,
+    profileErrors,
+    profileStatus,
+    isSaving,
+    handleFieldChange,
+    handleGenderChange,
+    handleBirthDateChange,
+    saveProfile,
+    resetProfileForm,
+  } = useProfileManager(
+    userData,
+    localStorage.getItem("token") || getTokenFromCookie(),
+  );
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -87,9 +107,49 @@ const UserPage = () => {
     (event) => event.createdBy === userData.id,
   );
 
+  const closeUserModal = () => {
+    setIsUserModalOpen(false);
+    resetProfileForm();
+  };
+
+  const openUserModal = () => {
+    resetProfileForm();
+    setIsUserModalOpen(true);
+  };
+
+  const handleProfileSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const updatedUser = await saveProfile();
+      if (updatedUser) {
+        setUserData({
+          ...updatedUser,
+          token: userData.token,
+        });
+        closeUserModal();
+      }
+    } catch (error) {
+      console.error("ошибка обновления профиля:", error);
+    }
+  };
+
   if (isLoading) {
     return <div>загрузка...</div>;
   }
+
+  const getGenderText = (gender: string) => {
+    switch (gender) {
+      case "male":
+        return "мужской";
+      case "female":
+        return "женский";
+      case "other":
+        return "другой";
+      default:
+        return "не указано";
+    }
+  };
 
   return (
     <div>
@@ -109,7 +169,22 @@ const UserPage = () => {
             <div className={styles.userData}>
               <h2>профиль:</h2>
               <h3>имя: {userData.name}</h3>
+              <h3>фамилия: {userData.surname}</h3>
+              <h3>отчество: {userData.patronymic}</h3>
               <h3>почта: {userData.email}</h3>
+              <h3>пол: {getGenderText(userData.gender)}</h3>
+              <h3>
+                дата рождения:{" "}
+                {new Date(userData.dateOfBirth).toLocaleDateString()}
+              </h3>
+            </div>
+            <div>
+              <button
+                onClick={openUserModal}
+                className={styles.userUpdateButton}
+              >
+                редактировать
+              </button>
             </div>
           </div>
 
@@ -235,6 +310,21 @@ const UserPage = () => {
           modalRef={burgerModalRef}
         />
       </div>
+
+      {/* модальное окно для редактирования профиля */}
+      <UserProfileModal
+        ref={userModalRef}
+        isOpen={isUserModalOpen}
+        onClose={closeUserModal}
+        onSubmit={handleProfileSubmit}
+        profileData={profileData}
+        profileErrors={profileErrors}
+        profileStatus={profileStatus}
+        isSaving={isSaving}
+        handleFieldChange={handleFieldChange}
+        handleGenderChange={handleGenderChange}
+        handleBirthDateChange={handleBirthDateChange}
+      />
 
       {message && <div className={styles.message}>{message}</div>}
     </div>

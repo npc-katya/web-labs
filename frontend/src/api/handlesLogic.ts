@@ -14,7 +14,16 @@ export const useHandlesLogic = () => {
   const handleRegister = () => navigate("/register");
   const handleLogout = () => {
     logoutUser();
-    setUserData({ name: "", email: "", id: null, token: null });
+    setUserData({
+      name: "",
+      surname: "",
+      patronymic: "",
+      email: "",
+      gender: "not specified",
+      dateOfBirth: new Date(0),
+      id: null,
+      token: null,
+    });
     window.location.reload();
     handleHome();
   };

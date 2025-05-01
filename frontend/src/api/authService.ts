@@ -1,9 +1,23 @@
+type Gender = "male" | "female" | "other" | "not specified";
+
 export const registerUser = async (
   name: string,
+  surname: string,
+  patronymic: string,
+  gender: Gender,
+  dateOfBirth: Date,
   email: string,
   password: string,
 ) => {
-  const userData = { name, email, password };
+  const userData = {
+    name,
+    surname,
+    patronymic,
+    gender,
+    dateOfBirth,
+    email,
+    password,
+  };
 
   const response = await fetch("http://localhost:8080/auth/register", {
     method: "POST",
