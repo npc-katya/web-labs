@@ -1,6 +1,12 @@
+type Gender = "male" | "female" | "other" | "not specified";
+
 export interface User {
-  id: number;
+  id: number | null;
   name: string;
+  surname: string;
+  patronymic: string;
+  gender: Gender;
+  dateOfBirth: Date;
   email: string;
   password: string;
 }
@@ -95,7 +101,7 @@ export class UserService {
   // обновление пользователя
   public async updateUser(
     userId: number,
-    userData: Omit<User, "id">,
+    userData: Omit<User, "id" | "password">,
   ): Promise<User> {
     if (!this.token) throw new Error("токен отсутствует");
 
@@ -108,7 +114,10 @@ export class UserService {
             Authorization: `Bearer ${this.token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(userData),
+          body: JSON.stringify({
+            ...userData,
+            dateOfBirth: new Date(userData.dateOfBirth).toISOString(),
+          }),
         },
       );
 

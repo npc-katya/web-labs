@@ -12,15 +12,28 @@
 
 .content {
   display: flex;
+  flex-direction: column;
   padding: 80px 10%;
   position: relative;
+  justify-content: center;
+}
+
+.userMapContainer {
+  display: flex;
+  justify-content: space-between;
+  height: 400px;
+}
+
+.userContainer {
+  width: 30%;
+}
+
+.userData {
+  margin-bottom: auto;
 }
 
 .mapContainer {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  width: 40%;
+  width: 68%;
   align-self: flex-start;
 
   .ymaps-map {
@@ -30,14 +43,12 @@
 }
 
 .map {
-  height: 600px;
+  height: 400px;
 }
 
 .eventsContainer {
   margin-left: auto;
   width: 58%;
-  overflow-y: auto;
-  overflow-x: hidden;
   max-height: calc(100vh - 60px);
 }
 
@@ -63,6 +74,33 @@
   background-color: #dad5dd;
 }
 
+h1 {
+  font-size: 40px;
+}
+
+h2 {
+  font-size: 30px;
+}
+
+h3 {
+  font-size: 20px;
+}
+
+.userData {
+  margin-bottom: 20px;
+}
+
+.userUpdateButton {
+  background-color: #c1b4d2;
+  width: 100%;
+  font-size: 20px;
+  border-radius: 8px;
+}
+
+.userUpdateButton:hover {
+  background-color: #aea1c0;
+}
+
 .events {
   display: flex;
   gap: 20px;
@@ -76,7 +114,7 @@
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   padding: 20px;
-  width: 200px;
+  width: 400px;
   min-height: 200px;
   transition:
     transform 0.3s ease,
@@ -105,7 +143,6 @@
 
 .eventMeta {
   color: #c29fd4;
-  font-size: 14px;
 }
 
 .creatorName {
@@ -195,10 +232,6 @@
   margin-top: 5px;
 }
 
-.modalMap {
-  margin-top: 10px;
-}
-
 .message {
   position: fixed;
   left: 20px;
@@ -211,64 +244,54 @@
 }
 
 @media (max-width: 1300px) {
-  .openCreateModalButton {
-    width: 250px;
-    font-size: 20px;
+  .userMapContainer {
+    height: 300px;
+  }
+
+  .userContainer {
+    width: 50%;
+  }
+
+  .mapContainer {
+    width: 45%;
+  }
+
+  .map {
+    height: 300px;
   }
 }
 
 @media (max-width: 1000px) {
-  .container {
-    overflow: auto;
+  h1 {
+    font-size: 35px;
   }
 
-  .content {
-    flex-direction: column;
-    padding: 80px 10%;
+  h2 {
+    font-size: 25px;
   }
 
-  .mapContainer {
-    position: visible;
-    top: auto;
-    height: 500px;
-    width: 100%;
-    align-self: auto;
-    margin: 20px, 0;
-
-    .ymaps-map {
-      width: 100% !important;
-      height: 100% !important;
-    }
-  }
-
-  .map {
-    height: 500px;
-  }
-
-  .eventsContainer {
-    margin-left: auto;
-    width: 100%;
-    overflow-y: visible;
-    overflow-x: visible;
-    max-height: calc(100vh - 60px);
+  h3 {
+    font-size: 15px;
   }
 }
 
 @media (max-width: 500px) {
-  .eventsHeader {
-    display: flex;
+  .userMapContainer {
     flex-direction: column;
+    height: auto;
+    margin-bottom: 20px;
   }
 
-  .openCreateModalButton {
+  .userContainer {
     width: 100%;
+    margin-bottom: 20px;
   }
 
   .mapContainer {
-    height: 300px;
+    width: 100%;
   }
 
   .map {
-    height: 300px;
+    height: 250px;
   }
 }

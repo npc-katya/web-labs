@@ -15,7 +15,7 @@ import { useHandlesLogic } from "../../api/handlesLogic";
 
 import menu from "../../img/menu.svg";
 
-const EventForm = () => {
+const EventsPage = () => {
   const { userData } = useUserLogic();
 
   const {
@@ -39,7 +39,6 @@ const EventForm = () => {
     modalRef,
     actionModalRef,
     deleteConfirmRef,
-    formData,
     inputMethod,
     selectedCoordinates,
     closeModal,
@@ -47,7 +46,6 @@ const EventForm = () => {
     selectedEvent,
     closeDeleteConfirm,
     closeActionsModal,
-
     message,
     isLoading,
     isModalOpen,
@@ -63,8 +61,6 @@ const EventForm = () => {
     openDeleteConfirm,
     openEditModal,
     openCreateModal,
-    handleInputChange,
-    handleDateChange,
     toggleInputMethod,
     showEventOnMap,
   } = useEventLogic();
@@ -75,7 +71,6 @@ const EventForm = () => {
 
   return (
     <div className={styles.container}>
-      {/* шапка */}
       <Header
         userData={userData}
         setIsLoginModalOpen={setIsLoginModalOpen}
@@ -83,74 +78,59 @@ const EventForm = () => {
         handleHome={handleHome}
       />
 
-      {/* основа */}
       <div className={styles.content}>
-        {/* карта */}
         <div className={styles.mapContainer}>
-          {/* карта событий */}
-          <div>
-            <YMaps>
-              <Map state={mapState} className={styles.map}>
-                {filteredEvents.map((event) => (
-                  <Placemark
-                    key={event.id}
-                    geometry={event.coordinates}
-                    properties={{
-                      balloonContentHeader: event.title,
-                      balloonContentBody: `
-                    <p><strong>дата:</strong> ${new Date(event.date).toLocaleDateString()}</p>
-                    <p><strong>создатель:</strong> ${event.creatorName}</p>
-                    <p>${event.description}</p>
-                  `,
-                      hintContent: event.title,
-                    }}
-                    options={{
-                      preset:
-                        event.id === highlightedEvent
-                          ? "islands#redDotIcon"
-                          : "islands#blueEventCircleIcon",
-                      iconColor:
-                        event.createdBy === currentUser.id
-                          ? "#8e85c9"
-                          : "#bcaeaf",
-                      hideIconOnBalloonOpen: false,
-                    }}
-                    modules={[
-                      "geoObject.addon.balloon",
-                      "geoObject.addon.hint",
-                    ]}
-                  />
-                ))}
-              </Map>
-            </YMaps>
-          </div>
+          <YMaps>
+            <Map state={mapState} className={styles.map}>
+              {filteredEvents.map((event) => (
+                <Placemark
+                  key={event.id}
+                  geometry={event.coordinates}
+                  properties={{
+                    balloonContentHeader: event.title,
+                    balloonContentBody: `
+                      <p><strong>дата:</strong> ${new Date(event.date).toLocaleDateString()}</p>
+                      <p><strong>создатель:</strong> ${event.creatorName}</p>
+                      <p>${event.description}</p>
+                    `,
+                    hintContent: event.title,
+                  }}
+                  options={{
+                    preset:
+                      event.id === highlightedEvent
+                        ? "islands#redDotIcon"
+                        : "islands#blueEventCircleIcon",
+                    iconColor:
+                      event.createdBy === currentUser.id
+                        ? "#8e85c9"
+                        : "#bcaeaf",
+                    hideIconOnBalloonOpen: false,
+                  }}
+                  modules={["geoObject.addon.balloon", "geoObject.addon.hint"]}
+                />
+              ))}
+            </Map>
+          </YMaps>
         </div>
 
-        {/* основа событий */}
         <div className={styles.eventsContainer}>
-          {/* шапка событий */}
           <div className={styles.eventsHeader}>
             <h1>события:</h1>
-            <div>
-              {currentUser.id && (
-                <button
-                  onClick={openCreateModal}
-                  className={styles.openCreateModalButton}
-                >
-                  добавить событие
-                </button>
-              )}
-            </div>
+            {currentUser.id && (
+              <button
+                onClick={openCreateModal}
+                className={styles.openCreateModalButton}
+              >
+                добавить событие
+              </button>
+            )}
           </div>
-
-          {/* события */}
           <div className={styles.events}>
             {filteredEvents.length === 0 ? (
               <p>события не найдены</p>
             ) : (
               filteredEvents.map((event) => (
                 <div key={event.id} className={styles.event}>
-                  {" "}
                   <div className={styles.eventText}>
                     <h3>{event.title}</h3>
                     <p className={styles.eventMeta}>
@@ -175,14 +155,10 @@ const EventForm = () => {
         </div>
       </div>
 
-      {/* модальное окно для создания, изменения */}
       <Modal
         isOpen={isModalOpen}
         selectedEvent={selectedEvent}
         handleSubmit={handleSubmit}
-        formData={formData}
-        handleInputChange={handleInputChange}
-        handleDateChange={handleDateChange}
         toggleInputMethod={toggleInputMethod}
         inputMethod={inputMethod}
         selectedCoordinates={selectedCoordinates}
@@ -204,7 +180,6 @@ const EventForm = () => {
         />
       )}
 
-      {/* модальное окно для подтвеждения удаления */}
       {isDeleteConfirmOpen && (
         <DeleteConfirmModal
           ref={deleteConfirmRef}

@@ -1,10 +1,16 @@
 import { Model, DataTypes } from "sequelize";
 import { sequelize } from "@config/db";
 
+type Gender = 'male' | 'female' | 'other' | 'not specified';
+
 interface UserAttributes {
   id: number;
   name: string;
+  surname: string;
+  patronymic: string;
   email: string;
+  gender: Gender;
+  dateOfBirth: Date;
   password: string;
   createdAt: Date;
   updatedAt: Date;
@@ -13,7 +19,11 @@ interface UserAttributes {
 class User extends Model<UserAttributes> implements UserAttributes {
   declare id: number;
   declare name: string;
+  declare surname: string;
+  declare patronymic: string;
   declare email: string;
+  declare gender: Gender;
+  declare dateOfBirth: Date;
   declare password: string;
   declare createdAt: Date;
   declare updatedAt: Date;
@@ -41,6 +51,14 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    surname: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    patronymic: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -48,6 +66,15 @@ User.init(
     password: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    gender: {
+      type: DataTypes.ENUM('male', 'female', 'other', 'not specified'),
+      allowNull: false,
+      defaultValue: 'not specified',
+    },
+    dateOfBirth: {
+      type: DataTypes.DATE,
+      allowNull: true,
     },
     createdAt: {
       type: DataTypes.DATE,

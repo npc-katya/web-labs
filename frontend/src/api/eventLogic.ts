@@ -1,70 +1,107 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
-import { jwtDecode } from "jwt-decode";
-import { EventService, Event } from "./eventService";
-import { UserService } from "./userService";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "../app/store";
+import { fetchEventsThunk } from "../features/events/eventSlice";
 
+import { EventWithCreator } from "../features/events/eventSlice";
+import { EventService } from "../api/eventService";
+import { jwtDecode } from "jwt-decode";
+import { UserService } from "../api/userService";
 import { useClickOutside } from "../utils/useClickOutside";
 
-interface EventWithCreator extends Event {
-  creatorName: string;
-  coordinates: number[];
+interface FormData {
+  title: string;
+  date: Date;
+  location: string;
+  description: string;
 }
 
 export const useEventLogic = () => {
-  // состояния для данных формы
-  const [formData, setFormData] = useState({
-    title: "",
-    date: new Date(),
-    description: "",
-    location: "53.229292, 50.197327",
-    coordinates: [53.229292, 50.197327],
-  });
-
-  // состояния для авторизации и пользователя
+  const dispatch = useDispatch<AppDispatch>();
+  const { events, isLoading, isError, message } = useSelector(
+    (state: RootState) => state.events,
+  );
   const [token, setToken] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<{
     id: number | null;
     name: string;
   }>({ id: null, name: "" });
+  
+  const [formData, setFormData] = useState({
+    title: "",
+    date: new Date(),
+    description: "",
+    location: "53.229292, 50.197327",
+    coordinates: [53.229292, 50.197327] as [number, number],
+  });
 
-  // состояния для данных
-  const [events, setEvents] = useState<EventWithCreator[]>([]);
-  const [message, setMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [searchTerm] = useState("");
-
-  // состояния для модальных окон
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isActionsModalOpen, setIsActionsModalOpen] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<EventWithCreator | null>(
     null,
   );
-  const [isActionsModalOpen, setIsActionsModalOpen] = useState(false);
-  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
-
-  // состояния для карты
   const [mapState, setMapState] = useState({
     center: [53.229292, 50.197327] as [number, number],
     zoom: 10,
   });
+  
   const [selectedCoordinates, setSelectedCoordinates] = useState<
     [number, number] | null
   >(null);
   const [inputMethod, setInputMethod] = useState<"map" | "manual">("map");
   const [highlightedEvent, setHighlightedEvent] = useState<number | null>(null);
 
-  // получение токена из cookie
+  const modalRef = useRef<HTMLDivElement>(null);
+  const actionModalRef = useRef<HTMLDivElement>(null);
+  const deleteConfirmRef = useRef<HTMLDivElement>(null);
+
+  const [searchTerm] = useState("");
+
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  useClickOutside(modalRef, () => setIsModalOpen(false), isModalOpen);
+  useClickOutside(
+    actionModalRef,
+    () => setIsActionsModalOpen(false),
+    isActionsModalOpen,
+  );
+  useClickOutside(
+    deleteConfirmRef,
+    () => setIsDeleteConfirmOpen(false),
+    isDeleteConfirmOpen,
+  );
+  
   const getTokenFromCookie = useCallback((): string | null => {
     const cookies = document.cookie.split("; ");
     const tokenCookie = cookies.find((cookie) => cookie.startsWith("token="));
     return tokenCookie ? tokenCookie.split("=")[1] : null;
   }, []);
 
-  // преобразование строки локации в координаты
-  const parseLocation = useCallback((location: string): number[] => {
-    return location.split(",").map((coord) => parseFloat(coord.trim()));
-  }, []);
+  useEffect(() => {
+    const loadUserAndEvents = async () => {
+      const tokenFromCookie = getTokenFromCookie();
+      setToken(tokenFromCookie);
 
-  // обработчик клика по карте
+      if (tokenFromCookie) {
+        try {
+          const decoded: any = jwtDecode(tokenFromCookie);
+          const userService = new UserService(tokenFromCookie);
+          const user = await userService.fetchUserById(decoded.id);
+
+          setCurrentUser({ id: decoded.id, name: user.name });
+        } catch (error) {
+          console.error("Ошибка получения пользователя:", error);
+        }
+      }
+
+      dispatch(fetchEventsThunk());
+    };
+
+    loadUserAndEvents();
+  }, [dispatch, getTokenFromCookie]);
+
   const handleMapClick = useCallback(
     (e: any) => {
       if (inputMethod === "map") {
@@ -79,212 +116,6 @@ export const useEventLogic = () => {
     },
     [inputMethod],
   );
-
-  const filteredEvents = events.filter(
-    (event) =>
-      event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.creatorName.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
-
-  // загрузка начальных данных
-  useEffect(() => {
-    const loadInitialData = async () => {
-      const tokenFromCookie = getTokenFromCookie();
-      setToken(tokenFromCookie);
-
-      try {
-        await fetchEvents(tokenFromCookie);
-
-        if (tokenFromCookie) {
-          const decoded: any = jwtDecode(tokenFromCookie);
-          const userService = new UserService(tokenFromCookie);
-          const user = await userService.fetchUserById(decoded.id);
-
-          setCurrentUser({
-            id: decoded.id,
-            name: user.name,
-          });
-        }
-      } catch (error) {
-        console.error("ошибка загрузки данных:", error);
-        setMessage("ошибка при загрузке данных");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadInitialData();
-  }, [getTokenFromCookie]);
-
-  // загрузка событий с именами создателей
-  const fetchEvents = useCallback(
-    async (token: string | null) => {
-      try {
-        setIsLoading(true);
-        const eventService = new EventService(token);
-
-        const fetchedEvents = await eventService.fetchEvents();
-
-        const eventsWithCreators = await Promise.all(
-          fetchedEvents.map(async (event) => {
-            const coordinates = parseLocation(event.location);
-            let creatorName = "кто-то";
-
-            if (token && event.createdBy === currentUser.id) {
-              creatorName = currentUser.name;
-            } else if (token) {
-              const userService = new UserService(token);
-              const creator = await userService.fetchUserById(event.createdBy);
-              creatorName = creator.name;
-            }
-
-            return {
-              ...event,
-              creatorName,
-              coordinates,
-            };
-          }),
-        );
-
-        setEvents(eventsWithCreators);
-
-        if (fetchedEvents.length > 0) {
-          const firstEventCoords = parseLocation(fetchedEvents[0].location);
-          setMapState({
-            center: firstEventCoords as [number, number],
-            zoom: 10,
-          });
-        }
-      } catch (error) {
-        console.error("Ошибка загрузки событий:", error);
-        setMessage("Ошибка при загрузке событий");
-        setEvents([]);
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [currentUser.id, currentUser.name, parseLocation],
-  );
-
-  // обработчик отправки формы
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!token || !currentUser.id) {
-      setMessage("необходима авторизация");
-      return;
-    }
-
-    if (
-      inputMethod === "manual" &&
-      !/^-?\d+\.\d+,\s*-?\d+\.\d+$/.test(formData.location)
-    ) {
-      setMessage('некорректный формат локации. используйте: "широта, долгота"');
-      return;
-    }
-
-    try {
-      const eventService = new EventService(token);
-
-      if (selectedEvent) {
-        await eventService.updateEvent(selectedEvent.id, {
-          ...formData,
-          location: formData.location,
-        });
-        setMessage("событие успешно обновлено");
-      } else {
-        await eventService.createEvent({
-          ...formData,
-          createdBy: currentUser.id,
-          location: formData.location,
-        });
-        setMessage("событие успешно создано");
-      }
-
-      await fetchEvents(token);
-      closeModal();
-    } catch (error) {
-      console.error("ошибка:", error);
-      setMessage(
-        `ошибка при ${selectedEvent ? "обновлении" : "создании"} события`,
-      );
-    }
-  };
-
-  // удаление события
-  const handleDelete = async () => {
-    if (!token || !selectedEvent) return;
-
-    try {
-      const eventService = new EventService(token);
-      await eventService.deleteEvent(selectedEvent.id);
-      setMessage("событие успешно удалено");
-      await fetchEvents(token);
-      closeDeleteConfirm();
-      closeActionsModal();
-    } catch (error) {
-      console.error("ошибка:", error);
-      setMessage("ошибка при удалении события");
-    }
-  };
-
-  // модальные окна
-  const openActionsModal = (event: EventWithCreator) => {
-    setSelectedEvent(event);
-    setIsActionsModalOpen(true);
-  };
-
-  const closeActionsModal = () => {
-    setIsActionsModalOpen(false);
-    setSelectedEvent(null);
-  };
-
-  const openDeleteConfirm = () => {
-    setIsDeleteConfirmOpen(true);
-  };
-
-  const closeDeleteConfirm = () => {
-    setIsDeleteConfirmOpen(false);
-  };
-
-  const openEditModal = (event: EventWithCreator) => {
-    closeActionsModal();
-    closeDeleteConfirm();
-
-    setSelectedEvent(event);
-    setFormData({
-      title: event.title,
-      date: event.date,
-      description: event.description,
-      location: event.location,
-      coordinates: event.coordinates,
-    });
-    setSelectedCoordinates(event.coordinates as [number, number]);
-    setInputMethod("manual");
-
-    setIsModalOpen(true);
-  };
-
-  const openCreateModal = () => {
-    setSelectedEvent(null);
-    setFormData({
-      title: "",
-      date: new Date(),
-      description: "",
-      location: "53.229292, 50.197327",
-      coordinates: [53.229292, 50.197327],
-    });
-    setSelectedCoordinates([53.229292, 50.197327]);
-    setInputMethod("map");
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedEvent(null);
-    setSelectedCoordinates(null);
-  };
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -307,7 +138,6 @@ export const useEventLogic = () => {
     }));
   };
 
-  // переключение метода ввода координат
   const toggleInputMethod = () => {
     const newMethod = inputMethod === "map" ? "manual" : "map";
     setInputMethod(newMethod);
@@ -317,6 +147,130 @@ export const useEventLogic = () => {
         ...prev,
         location: `${selectedCoordinates[0]}, ${selectedCoordinates[1]}`,
       }));
+    }
+  };
+
+  const openCreateModal = () => {
+    setSelectedEvent(null);
+    setFormData({
+      title: "",
+      date: new Date(),
+      description: "",
+      location: "53.229292, 50.197327",
+      coordinates: [53.229292, 50.197327],
+    });
+    setSelectedCoordinates([53.229292, 50.197327]);
+    setInputMethod("map");
+    setIsModalOpen(true);
+
+  };
+
+  const openEditModal = (event: EventWithCreator) => {
+    closeActionsModal();
+    closeDeleteConfirm();
+    setSelectedEvent(event);
+    setFormData({
+      title: event.title,
+      date: new Date(event.date),
+      description: event.description,
+      location: event.location,
+      coordinates: [event.coordinates[0], event.coordinates[1]],
+    });
+    setSelectedCoordinates([event.coordinates[0], event.coordinates[1]]);
+    setInputMethod("manual");
+    setIsModalOpen(true);
+  };
+
+  const openActionsModal = (event: EventWithCreator) => {
+    setSelectedEvent(event);
+    setIsActionsModalOpen(true);
+
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedEvent(null);
+    setSelectedCoordinates(null);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+  };
+
+  const closeActionsModal = () => {
+    setIsActionsModalOpen(false);
+    setSelectedEvent(null);
+  };
+
+  const openDeleteConfirm = () => {
+    setIsDeleteConfirmOpen(true);
+  };
+
+  const closeDeleteConfirm = () => {
+    setIsDeleteConfirmOpen(false);
+  };
+
+  const handleSubmit = async (data: FormData) => {
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    if (!token || !currentUser.id) {
+      setErrorMessage("необходима авторизация для выполнения этого действия.");
+      return;
+    }
+
+    if (
+      inputMethod === "manual" &&
+      !/^-?\d+\.\d+,\s*-?\d+\.\d+$/.test(data.location)
+    ) {
+      setErrorMessage(
+        'некорректный формат координат. Используйте формат: "широта, долгота"',
+      );
+      return;
+    }
+
+    try {
+      const eventService = new EventService(token);
+
+      if (selectedEvent) {
+        await eventService.updateEvent(selectedEvent.id, { ...data });
+        setSuccessMessage("событие успешно обновлено.");
+      } else {
+        await eventService.createEvent({
+          ...data,
+          createdBy: currentUser.id,
+        });
+        setSuccessMessage("событие успешно создано.");
+      }
+
+      dispatch(fetchEventsThunk());
+      closeModal();
+    } catch (error: any) {
+      console.error("ошибка при сохранении события:", error);
+      const status = error?.response?.status || "";
+      const serverMessage =
+        error?.response?.data?.message || "не удалось сохранить событие.";
+      setErrorMessage(`Ошибка ${status}: ${serverMessage}`);
+    }
+  };
+
+  const handleDelete = async () => {
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    if (!token || !selectedEvent) return;
+
+    try {
+      const eventService = new EventService(token);
+      await eventService.deleteEvent(selectedEvent.id);
+      setSuccessMessage("событие успешно удалено.");
+      dispatch(fetchEventsThunk());
+      closeDeleteConfirm();
+      closeActionsModal();
+    } catch (error: any) {
+      console.error("ошибка при удалении события:", error);
+      const status = error?.response?.status || "";
+      const serverMessage =
+        error?.response?.data?.message || "не удалось удалить событие.";
+      setErrorMessage(`ошибка ${status}: ${serverMessage}`);
     }
   };
 
@@ -332,31 +286,17 @@ export const useEventLogic = () => {
     [],
   );
 
-  const modalRef = useRef<HTMLDivElement>(null);
-  const actionModalRef = useRef<HTMLDivElement>(null);
-  const deleteConfirmRef = useRef<HTMLDivElement>(null);
-
-  useClickOutside(modalRef, () => setIsModalOpen(false), isModalOpen);
-  useClickOutside(
-    actionModalRef,
-    () => setIsActionsModalOpen(false),
-    isActionsModalOpen,
-  );
-  useClickOutside(
-    deleteConfirmRef,
-    () => setIsDeleteConfirmOpen(false),
-    isDeleteConfirmOpen,
+  const filteredEvents = events.filter(
+    (event) =>
+      event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      event.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      event.creatorName.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return {
     modalRef,
     actionModalRef,
     deleteConfirmRef,
-
-    setFormData,
-    setSelectedCoordinates,
-    setInputMethod,
-
     formData,
     inputMethod,
     selectedCoordinates,
@@ -368,6 +308,7 @@ export const useEventLogic = () => {
 
     message,
     isLoading,
+    isError,
     isModalOpen,
     isActionsModalOpen,
     isDeleteConfirmOpen,
@@ -385,5 +326,7 @@ export const useEventLogic = () => {
     handleDateChange,
     toggleInputMethod,
     showEventOnMap,
+    errorMessage,
+    successMessage,
   };
 };

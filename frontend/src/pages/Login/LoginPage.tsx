@@ -1,98 +1,76 @@
 import React, { useState, useEffect } from "react";
-import { loginUser } from "../../api/authService";
 import styles from "./LoginPage.module.scss";
 import { useNavigate } from "react-router-dom";
-
-// функция для получения токена из куки
-const getTokenFromCookie = () => {
-  const cookies = document.cookie.split(";");
-  for (let cookie of cookies) {
-    const [name, value] = cookie.trim().split("=");
-    if (name === "token") return value;
-  }
-  return null;
-};
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { loginThunk } from "../../features/auth/authSlice";
 
 const LoginForm = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
-
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const { isLoading, isError, user } = useAppSelector((state) => state.auth);
+
   useEffect(() => {
-    const token = getTokenFromCookie();
-    if (token) {
+    if (user) {
       navigate("/events");
     }
-  }, [navigate]);
+  }, [user, navigate]);
 
-  // аутентификация пользователя
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    try {
-      const data = await loginUser(email, password);
-
-      // Сохраняем токен в куки
-      document.cookie = `token=${data.token}; path=/;`;
-
-      setMessage(`добро пожаловать, ${data.name}`);
-      window.location.href = "/events";
-    } catch (error) {
-      console.error("ошибка:", error);
-      setMessage("ошибка при входе");
-    }
-  };
-
-  // регистрация
-  const handleRegister = () => {
-    window.location.href = "/register";
-  };
-
-  // дом
-  const handleHome = () => {
-    window.location.href = "/";
+    dispatch(loginThunk({ email, password }));
   };
 
   return (
-    <div>
-      <div className={styles.container}>
-        <h2>вход</h2>
-        <form onSubmit={handleLogin}>
-          <div>
-            <input
-              type="email"
-              placeholder="почта"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className={styles.input}
-            />
-          </div>
-          <div>
-            <input
-              type="password"
-              placeholder="пароль"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className={styles.input}
-            />
-          </div>
-          <button type="submit" className={styles.loginButton}>
-            войти
-          </button>
-        </form>
-
-        <h3>ещё не зарегистрированы????</h3>
-        <button onClick={handleRegister} className={styles.registerButton}>
-          зарегистрироваться
+    <div className={styles.container}>
+      <h2>вход</h2>
+      <form onSubmit={handleLogin}>
+        <div>
+          <input
+            type="email"
+            placeholder="почта"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className={styles.input}
+          />
+        </div>
+        <div>
+          <input
+            type="password"
+            placeholder="пароль"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className={styles.input}
+          />
+        </div>
+        <button
+          type="submit"
+          className={styles.loginButton}
+          disabled={isLoading}
+        >
+          {isLoading ? "входим..." : "войти"}
         </button>
+      </form>
 
-        <button onClick={handleHome} className={styles.homeButton}></button>
-      </div>
-      {message && <p className={styles.message}>{message}</p>}
+      {isError && <p className={styles.message}>ошибка при входе</p>}
+
+      <h3>ещё не зарегистрированы????</h3>
+      <button
+        onClick={() => navigate("/register")}
+        className={styles.registerButton}
+      >
+        зарегистрироваться
+      </button>
+
+      <button
+        onClick={() => navigate("/")}
+        className={styles.homeButton}
+      ></button>
     </div>
   );
 };

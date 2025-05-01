@@ -1,3 +1,5 @@
+type Gender = "male" | "female" | "other" | "not specified";
+
 import { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import { UserService } from "./userService";
@@ -8,10 +10,20 @@ export const useUserLogic = () => {
 
   const [userData, setUserData] = useState<{
     name: string;
+    surname: string;
+    patronymic: string;
+    gender: Gender;
+    dateOfBirth: Date;
+    email: string;
     id: number | null;
     token: string | null;
   }>({
     name: "",
+    surname: "",
+    patronymic: "",
+    email: "",
+    gender: "not specified",
+    dateOfBirth: new Date(0),
     id: null,
     token: null,
   });
@@ -57,6 +69,11 @@ export const useUserLogic = () => {
       if (user) {
         setUserData({
           name: user.name,
+          surname: user.surname,
+          patronymic: user.patronymic,
+          email: user.email,
+          gender: user.gender,
+          dateOfBirth: user.dateOfBirth,
           id: user.id,
           token: token,
         });

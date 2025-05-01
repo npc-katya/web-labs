@@ -2,15 +2,14 @@ import { useState, useRef } from "react";
 import { useClickOutside } from "../utils/useClickOutside";
 
 export const useModalsLogic = () => {
-  // состояния для модальных окон
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isBurgerModalOpen, setIsBurgerModalOpen] = useState(false);
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false);
 
-  // рефы для модальных окон
   const loginModalRef = useRef<HTMLDivElement>(null);
   const burgerModalRef = useRef<HTMLDivElement>(null);
+  const userModalRef = useRef<HTMLDivElement>(null);
 
-  // обработчики кликов вне модальных окон
   useClickOutside(
     loginModalRef,
     () => setIsLoginModalOpen(false),
@@ -21,13 +20,21 @@ export const useModalsLogic = () => {
     () => setIsBurgerModalOpen(false),
     isBurgerModalOpen,
   );
+  useClickOutside(
+    userModalRef,
+    () => setIsUserModalOpen(false),
+    isUserModalOpen,
+  );
 
   return {
     isLoginModalOpen,
     setIsLoginModalOpen,
     isBurgerModalOpen,
     setIsBurgerModalOpen,
+    isUserModalOpen,
+    setIsUserModalOpen,
     loginModalRef,
     burgerModalRef,
+    userModalRef,
   };
 };
