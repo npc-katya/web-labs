@@ -125,6 +125,7 @@ const EventsPage = () => {
               </button>
             )}
           </div>
+
           <div className={styles.events}>
             {filteredEvents.length === 0 ? (
               <p>события не найдены</p>
@@ -212,4 +213,4 @@ const EventsPage = () => {
   );
 };
 
-export default EventForm;
+export default EventsPage;
